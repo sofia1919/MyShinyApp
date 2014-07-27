@@ -1,0 +1,89 @@
+---
+title: "My ShinyApp"
+output: html_document
+---
+**Background**
+
+The idea for my shinyApp is based on historical research of the Nobel Prize winner Otto Wahrburg, who has discovered in 1936 that there is a realtionship between pH-Levels and cancerin the human body.Since then there is plenty of research showing the link between acidic pH and cancer. Cancer thrives in an acidic environment and cannot survive in an alkaline environment.Taking action to make our body more alkaline is crusious in the battle against cancer.
+
+The pH-Scale is a measure of acidity or alkalinity of water soluble substances (pH stands for 'potential of Hydrogen'). A pH value is a number from 1 to 14, with 7 as the middle (neutral) point. Values below 7 indicate acidity which increases as the number decreases, 1 being the most acidic. Values above 7 indicate alkalinity which increases as the number increases, 14 being the most alkaline.The pH-Scale is logarithmic and therefore pH is a dimensionless quantity.
+The average PH-Value is measured as function of saliva pH-Value as well as urine pH-Value.
+
+**Creating the ShinyApp- "Cancer Risk based on average pH-Value"**
+
+
+Setting the directory,loading all the necessary packages and creating the ui.R file
+
+
+```{r, eval=FALSE}
+
+
+# Creating of ui.R
+
+library(devtools)
+library(shinyapps)
+library(shiny)
+shinyUI(
+  pageWithSidebar(
+    headerPanel("Cancer Risk based on average pH-Value"),
+    sidebarPanel(
+      numericInput('pHValue1','saliva pH-Value',7,min=1,max=14, step=1),
+      numericInput('pHValue2','urine pH-Value',7, min=1,max=14, step=1),
+      submitButton('Submit')
+    ),
+    mainPanel(
+      h3('Results'),
+      h4('You entered saliva pH-Value'),
+      verbatimTextOutput('inputValueA'),
+      h4('You entered urine pH-Value'),
+      verbatimTextOutput('inputValueB'),
+      h4('Your average pH-Value and potential Cancer Risk'),
+      verbatimTextOutput('result')
+      )
+  )
+)
+```
+
+Setting the directory,loading all the necessary packages and creating the server.R file with the imbeded functions and calculations
+
+```{r, eval=FALSE}
+
+# Creating of server.R
+
+library(devtools)
+library(shinyapps)
+library(shiny)
+cancerRisk<-function(pHValue1,pHValue2) {
+    p<-(pHValue1*2+pHValue2)/3
+  print(p)
+  
+  k<-if(p< 7) {paste("Acidic- High Cancer Risk")}
+         else {paste("Alcaline- Low Cancer Risk")}
+  
+print(k)
+}
+
+shinyServer(
+  function(input, output) {
+    output$inputValueA<-renderPrint({input$pHValue1})
+    output$inputValueB<-renderPrint({input$pHValue2})
+    output$result<-renderPrint({cancerRisk(input$pHValue1,input$pHValue2)})
+    }
+)
+```
+
+**Running the ShinyApp**
+
+
+```{r, eval=FALSE}
+library(shiny)
+runApp()
+```
+
+**Deploying the ShinyApp*
+
+
+```{r, eval=FALSE}
+deployApp()
+```
+
